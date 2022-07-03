@@ -1,5 +1,5 @@
 # ACHNet
-Repository of Attention-guided Contrastive Hashing for Long-tailed Image Retrieval (accepted to IJCAI2022)
+Repository of Attention-guided Contrastive Hashing for Long-tailed Image Retrieval (accepted to IJCAI2022)  
 paper link: 
 
 # Datasets Download
@@ -12,6 +12,5 @@ For the purpose of fair comparison, we use the dataset from Long-tailed Hashing,
 - Set hyper-parameters in arg.py, use python main.py to train the model
 
 # Requirements
-Python 3.7.12
-
+Python 3.7.12  
 Pytorch 1.8.0
