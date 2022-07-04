@@ -33,7 +33,7 @@ class Onehot(object):
         return target_onehot
 
 
-def train_transform():
+def train_transform_cifar():
     """
     Training images transform.
 
@@ -48,6 +48,26 @@ def train_transform():
     return transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.CenterCrop((224, 224)),
+        transforms.ToTensor(),
+        normalize,
+    ])
+
+
+def train_transform_imagenet():
+    """
+    Training images transform.
+
+    Args
+        None
+
+    Returns
+        transform(torchvision.transforms): transform
+    """
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+    return transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
