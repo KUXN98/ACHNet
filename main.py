@@ -7,7 +7,7 @@ import torch.optim as optim
 from args import get_args
 from loguru import logger
 from network import resnet
-from data import imb_data_loader
+from data import data_loader_1
 from tools import model_train, loss
 
 
@@ -28,7 +28,7 @@ def main(args):
         torch.cuda.manual_seed(args.seed)
         np.random.seed(args.seed)
 
-    logger.add('logs/{}_code_{}_gamma_{}_batch_size_{}.log'.format(
+    logger.add('logs/{}_code_{}_lamb_{}_batch_size_{}.log'.format(
         args.dataset,
         args.code_length,
         args.lamb,
@@ -42,11 +42,11 @@ def main(args):
     # Build dataset
     dataset = args.dataset.split('-')[0]
 
-    train_loader, query_loader, retrieval_loader = imb_data_loader.load_data(args.dataset,
-                                                                             args.root,
-                                                                             args.batch_size,
-                                                                             args.num_workers
-                                                                             )
+    train_loader, query_loader, retrieval_loader = data_loader_1.load_data(args.dataset,
+                                                                           args.root,
+                                                                           args.batch_size,
+                                                                           args.num_workers
+                                                                           )
 
     print('dataset loading end')
 
@@ -72,6 +72,8 @@ def main(args):
                 lr=args.lr,
                 weight_decay=5e-4,
             )
+            print('cifar-100 optimizer end')
+
         elif dataset == 'imagenet':
             feature_params = []
             hashing_params = []
@@ -85,6 +87,7 @@ def main(args):
                 {'params': feature_params, 'lr': 0.1*args.lr, 'weight_decay': 5e-4},
                 {'params': hashing_params, 'lr': 10*args.lr, 'weight_decay': 5e-4}]
             )
+            print('imagenet-100 optimizer end')
         else:
             optimizer = None
             print('dataset is not right')
@@ -109,12 +112,10 @@ def main(args):
         # Save checkpoint
         torch.save(
             checkpoint,
-            os.path.join('checkpoints', '{}_model_{}_code_{}_beta_{}_gamma_{}_map_{:.4f}_batchsize_{}_maxIter_{}.pt'.format(
+            os.path.join('checkpoints', '{}_code_{}_lamb_{}_map_{:.4f}_batchsize_{}_maxIter_{}.pt'.format(
                 args.dataset,
-                args.arch,
                 length,
-                args.beta,
-                args.gamma,
+                args.lamb,
                 checkpoint['map'],
                 args.batch_size,
                 args.max_iter)
