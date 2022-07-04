@@ -5,7 +5,7 @@ import torch
 from PIL import Image
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
-from data.transform import train_transform, query_transform, encode_onehot, Onehot
+from data.transform import train_transform_cifar, train_transform_imagenet, query_transform, encode_onehot, Onehot
 
 
 def load_data(dataset, root, batch_size, workers):
@@ -68,25 +68,31 @@ def load_data(dataset, root, batch_size, workers):
         print('train path error')
         return
 
-    train_dataset = ImagenetDataset(
-        train_dir,
-        transform=train_transform,
-        targets_transform=Onehot(100),
-    )
+    if dataset_name == 'cifar':
 
-    print('number of train sample: {}'.format(len(train_dataset)))
-
-    train_data_loader = DataLoader(
-        ImagenetDataset(
-            train_dir,
-            transform=train_transform(),
-            targets_transform=Onehot(100),
-        ),
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=workers,
-        pin_memory=True,
-    )
+        train_data_loader = DataLoader(
+            ImagenetDataset(
+                train_dir,
+                transform=train_transform_cifar(),
+                targets_transform=Onehot(100),
+            ),
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=workers,
+            pin_memory=True,
+        )
+    else:
+        train_data_loader = DataLoader(
+            ImagenetDataset(
+                train_dir,
+                transform=train_transform_imagenet(),
+                targets_transform=Onehot(100),
+            ),
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=workers,
+            pin_memory=True,
+        )
 
     query_data_loader = DataLoader(
         ImagenetDataset(
@@ -121,7 +127,7 @@ class ImagenetDataset(Dataset):
         self.root = root
         self.transform = transform
         self.targets_transform = targets_transform
-        self.imgs = []
+        self.data = []
         self.targets = []
 
         # Assume file alphabet order is the class order
@@ -132,20 +138,19 @@ class ImagenetDataset(Dataset):
             cur_class = os.path.join(self.root, cl)
             files = os.listdir(cur_class)
             files = [os.path.join(cur_class, i) for i in files]
-            self.imgs.extend(files)
+            self.data.extend(files)
             self.targets.extend([ImagenetDataset.class_to_idx[cl] for i in range(len(files))])
         self.targets = np.asarray(self.targets)
         self.onehot_targets = torch.from_numpy(encode_onehot(self.targets, 100)).float()
-        self.data = self.imgs
 
     def get_onehot_targets(self):
         return self.onehot_targets
 
     def __len__(self):
-        return len(self.imgs)
+        return len(self.data)
 
     def __getitem__(self, item):
-        img, target = self.imgs[item], self.targets[item]
+        img, target = self.data[item], self.targets[item]
 
         img = Image.open(img).convert('RGB')
 
