@@ -154,7 +154,7 @@ def train(args, length, model, optimizer, train_loader, query_loader,
                     'rAssignment': retrieval_assignment.cpu(),
                     'map': best_map,
                     'hash_center': hash_center.cpu(),
-                    'gamma': args.gamma,
+                    'lamb': args.lamb,
                 }
             end = time.time()
             print('evaluate time = {:3f}'.format(end - start))
