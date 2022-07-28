@@ -1,6 +1,6 @@
 # ACHNet
 Repository of Attention-guided Contrastive Hashing for Long-tailed Image Retrieval (accepted to IJCAI2022)  
-paper link: 
+paper link: https://www.ijcai.org/proceedings/2022/0142.pdf
 
 # Datasets Download
 link：https://pan.baidu.com/s/11R7Ncm4aowdKC9zh5tPe1Q \
